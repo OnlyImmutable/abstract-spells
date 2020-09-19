@@ -1,7 +1,6 @@
 package com.abstractstudios.spells;
 
 import com.abstractstudios.spells.base.spells.Spell;
-import com.abstractstudios.spells.base.spells.SpellColour;
 import com.abstractstudios.spells.base.user.SpellUser;
 import com.abstractstudios.spells.base.wands.Wand;
 import com.abstractstudios.spells.config.ConfigManager;
@@ -14,6 +13,7 @@ import com.abstractstudios.spells.utils.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,6 +24,8 @@ public class AbstractSpellsPlugin extends JavaPlugin {
 
     /** Create a {@link Gson} instance */
     public static final Gson GSON;
+
+    public static AbstractSpellsPlugin plugin;
 
     static {
         // Initialise GsonBuilder whilst serializing nulls to empty.
@@ -39,9 +41,11 @@ public class AbstractSpellsPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
 
+        plugin = this;
+
         // Load appropriate configs.
         spellConfig = ConfigManager.loadConfigFile(SpellConfig.class, defaults -> new SpellConfig(Arrays.asList(
-            new Spell("Expelliarmus", "The disarming charm", 10, SpellColour.BLUE)
+            new Spell("Expelliarmus", "The disarming charm", 10, Color.BLUE)
         )));
 
         wandConfig = ConfigManager.loadConfigFile(WandConfig.class, defaults -> new WandConfig(Arrays.asList(
@@ -88,6 +92,13 @@ public class AbstractSpellsPlugin extends JavaPlugin {
         });
 
         Logger.display("Abstract Spells has unloaded.");
+    }
+
+    /**
+     * @return Get the plugin.
+     */
+    public static AbstractSpellsPlugin getPlugin() {
+        return plugin;
     }
 
     /**

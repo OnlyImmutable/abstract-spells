@@ -1,5 +1,7 @@
 package com.abstractstudios.spells.base.spells;
 
+import org.bukkit.Color;
+
 public class Spell {
 
     // Name of the spell
@@ -11,7 +13,7 @@ public class Spell {
     private final int xpCost;
 
     // Colour of the particles for the spell.
-    private final SpellColour spellColour;
+    private final Color spellColour;
 
     /**
      * Create a new spell.
@@ -20,7 +22,7 @@ public class Spell {
      * @param xpCost - xp cost.
      * @param spellColour - spell colour.
      */
-    public Spell(String name, String description, int xpCost, SpellColour spellColour) {
+    public Spell(String name, String description, int xpCost, Color spellColour) {
         this.name = name;
         this.description = description;
         this.xpCost = xpCost;
@@ -51,12 +53,7 @@ public class Spell {
     /**
      * @return Get spell colour.
      */
-    public SpellColour getSpellColour() {
+    public Color getSpellColour() {
         return spellColour;
-    }
-
-    // What happens upon cast.
-    private void cast() {
-
     }
 }
