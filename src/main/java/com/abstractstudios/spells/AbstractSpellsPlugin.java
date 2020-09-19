@@ -4,9 +4,11 @@ import com.abstractstudios.spells.base.wands.Wand;
 import com.abstractstudios.spells.config.ConfigManager;
 import com.abstractstudios.spells.config.configs.SpellConfig;
 import com.abstractstudios.spells.config.configs.WandConfig;
+import com.abstractstudios.spells.listener.UserListener;
 import com.abstractstudios.spells.utils.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -38,6 +40,8 @@ public class AbstractSpellsPlugin extends JavaPlugin {
                 new Wand("Skilled", Material.STICK),
                 new Wand("Professional", Material.BLAZE_ROD)
         )));
+
+        Bukkit.getPluginManager().registerEvents(new UserListener(), this);
 
         Logger.display("Abstract Spells has loaded.");
     }
