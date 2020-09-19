@@ -1,9 +1,8 @@
-package com.abstractstudios.spells.configuration;
+package com.abstractstudios.spells.config;
 
 import com.abstractstudios.spells.AbstractSpellsPlugin;
 import com.abstractstudios.spells.utils.Logger;
 import org.apache.commons.lang3.Validate;
-import org.bukkit.Bukkit;
 
 import java.io.*;
 import java.util.function.Function;

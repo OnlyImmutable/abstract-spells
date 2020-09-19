@@ -1,4 +1,4 @@
-package com.abstractstudios.spells.configuration;
+package com.abstractstudios.spells.config;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,7 +1,7 @@
-package com.abstractstudios.spells.configuration.configs;
+package com.abstractstudios.spells.config.configs;
 
 import com.abstractstudios.spells.base.wands.Wand;
-import com.abstractstudios.spells.configuration.Config;
+import com.abstractstudios.spells.config.Config;
 
 import java.util.*;
 
