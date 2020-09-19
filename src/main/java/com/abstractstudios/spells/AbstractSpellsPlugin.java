@@ -1,5 +1,6 @@
 package com.abstractstudios.spells;
 
+import com.abstractstudios.spells.base.wands.Wand;
 import com.abstractstudios.spells.configuration.ConfigManager;
 import com.abstractstudios.spells.configuration.configs.SpellConfig;
 import com.abstractstudios.spells.configuration.configs.WandConfig;
@@ -7,6 +8,8 @@ import com.abstractstudios.spells.utils.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Arrays;
 
 public class AbstractSpellsPlugin extends JavaPlugin {
 
@@ -24,7 +27,11 @@ public class AbstractSpellsPlugin extends JavaPlugin {
 
         // Load appropriate configs.
         spellConfig = ConfigManager.loadConfigFile(SpellConfig.class, defaults -> new SpellConfig());
-        wandConfig = ConfigManager.loadConfigFile(WandConfig.class, defaults -> new WandConfig());
+        wandConfig = ConfigManager.loadConfigFile(WandConfig.class, defaults -> new WandConfig(Arrays.asList(
+                new Wand("Basic"),
+                new Wand("Skilled"),
+                new Wand("Professional")
+        )));
 
         Logger.display("Abstract Spells has loaded.");
     }
