@@ -1,0 +1,4 @@
+name: AbstractSpells
+main: com.abstractstudios.spells.AbstractSpellsPlugin
+version: 1.0
+author: ThatAbstractWolf
