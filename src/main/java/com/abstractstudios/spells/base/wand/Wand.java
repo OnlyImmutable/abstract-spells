@@ -1,4 +1,4 @@
-package com.abstractstudios.spells.base.wands;
+package com.abstractstudios.spells.base.wand;
 
 import org.bukkit.Material;
 

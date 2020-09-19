@@ -1,35 +1,44 @@
 package com.abstractstudios.spells;
 
-import com.abstractstudios.spells.base.spells.Spell;
+import com.abstractstudios.spells.base.spell.Spell;
+import com.abstractstudios.spells.base.spell.spells.ExpelliarmusSpell;
 import com.abstractstudios.spells.base.user.SpellUser;
-import com.abstractstudios.spells.base.wands.Wand;
+import com.abstractstudios.spells.base.wand.Wand;
 import com.abstractstudios.spells.config.ConfigManager;
 import com.abstractstudios.spells.config.configs.SpellConfig;
 import com.abstractstudios.spells.config.configs.WandConfig;
 import com.abstractstudios.spells.listener.SpellListener;
 import com.abstractstudios.spells.listener.UserListener;
 import com.abstractstudios.spells.manager.UserManager;
+import com.abstractstudios.spells.provider.InterfaceProvider;
 import com.abstractstudios.spells.utils.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
 
 public class AbstractSpellsPlugin extends JavaPlugin {
 
     /** Create a {@link Gson} instance */
     public static final Gson GSON;
 
+    /** Create a {@link Random} instance */
+    public static final Random RANDOM;
+
     public static AbstractSpellsPlugin plugin;
 
     static {
         // Initialise GsonBuilder whilst serializing nulls to empty.
-        GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        GSON = new GsonBuilder()
+                .setPrettyPrinting()
+                .serializeNulls()
+                .registerTypeAdapter(Spell.class, new InterfaceProvider<Spell>())
+                .create();
+        // Initialise the Random.
+        RANDOM = new Random();
     }
 
     /** {@link SpellConfig} */
@@ -44,9 +53,7 @@ public class AbstractSpellsPlugin extends JavaPlugin {
         plugin = this;
 
         // Load appropriate configs.
-        spellConfig = ConfigManager.loadConfigFile(SpellConfig.class, defaults -> new SpellConfig(Arrays.asList(
-            new Spell("Expelliarmus", "The disarming charm", 10, Color.BLUE)
-        )));
+        spellConfig = ConfigManager.loadConfigFile(SpellConfig.class, defaults -> new SpellConfig(getCodedSpells()));
 
         wandConfig = ConfigManager.loadConfigFile(WandConfig.class, defaults -> new WandConfig(Arrays.asList(
                 new Wand("Basic", Material.STICK),
@@ -113,5 +120,14 @@ public class AbstractSpellsPlugin extends JavaPlugin {
      */
     public WandConfig getWandConfig() {
         return wandConfig;
+    }
+
+    /**
+     * @return Get all the coded spells to pass to the config.
+     */
+    private final List<Spell> getCodedSpells() {
+        return Collections.singletonList(
+                new ExpelliarmusSpell()
+        );
     }
 }

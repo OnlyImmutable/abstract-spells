@@ -1,6 +1,6 @@
 package com.abstractstudios.spells.config.configs;
 
-import com.abstractstudios.spells.base.spells.Spell;
+import com.abstractstudios.spells.base.spell.Spell;
 import com.abstractstudios.spells.config.Config;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class SpellConfig {
      * @param name - name.
      * @return Spell
      */
-    public Spell getSpellByName(String name) { return spells.stream().filter(spell -> spell.getName().equalsIgnoreCase(name)).findFirst().orElse(null); }
+    public Spell getSpellByName(String name) { return spells.stream().filter(spell -> spell.name().equalsIgnoreCase(name)).findFirst().orElse(null); }
 
     /**
      * @return Get all the available wands.

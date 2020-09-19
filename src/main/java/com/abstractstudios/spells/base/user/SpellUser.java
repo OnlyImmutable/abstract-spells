@@ -1,7 +1,7 @@
 package com.abstractstudios.spells.base.user;
 
 import com.abstractstudios.spells.AbstractSpellsPlugin;
-import com.abstractstudios.spells.base.spells.Spell;
+import com.abstractstudios.spells.base.spell.Spell;
 import com.abstractstudios.spells.utils.Logger;
 import com.abstractstudios.spells.utils.ReflectionUtil;
 import org.bukkit.*;
@@ -12,9 +12,7 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.UUID;
 
 public class SpellUser {
@@ -30,7 +28,7 @@ public class SpellUser {
      */
     public SpellUser(UUID uuid) {
         this.uuid = uuid;
-        this.currentSpell = new Spell("Expelliarmus", "The disarming charm", 10, Color.GREEN);
+        this.currentSpell = AbstractSpellsPlugin.getPlugin().getSpellConfig().getSpellByName("Expelliarmus");
         this.ownedSpells = new HashSet<>();
     }
 
@@ -120,7 +118,7 @@ public class SpellUser {
         }
 
         snowball.setCustomNameVisible(false);
-        snowball.setCustomName(ChatColor.RED + getCurrentSpell().getName());
+        snowball.setCustomName(ChatColor.RED + getCurrentSpell().name());
 
         snowball.setShooter(caster);
         snowball.setBounce(false);
@@ -132,10 +130,11 @@ public class SpellUser {
 
                 snowball.setVelocity(direction);
 
-                Particle.DustOptions dust = new Particle.DustOptions(currentSpell.getSpellColour(), 1);
+                Particle.DustOptions dust = new Particle.DustOptions(currentSpell.spellColour(), 1);
                 caster.getWorld().spawnParticle(Particle.REDSTONE, snowball.getLocation().getX(), snowball.getLocation().getY() + 0.1, snowball.getLocation().getZ(), 0, (float) direction.getX(), (float) direction.getY(), (float) direction.getZ(), 2.5 , dust);
 
                 if (snowball.isOnGround() || snowball.isDead()) this.cancel();
+
             }
         }.runTaskTimer(AbstractSpellsPlugin.getPlugin(), 0, 1);
     }
