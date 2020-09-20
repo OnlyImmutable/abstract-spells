@@ -19,6 +19,9 @@ public class ExpelliarmusSpell implements Spell {
     // Description of the spell
     private final String description;
 
+    // The max distance a spell can travel.
+    private final int maxDistance;
+
     // Cost in xp to cast the spell.
     private final int xpCost;
 
@@ -31,6 +34,7 @@ public class ExpelliarmusSpell implements Spell {
     public ExpelliarmusSpell() {
         this.name = "Expelliarmus";
         this.description = "The disarming charm";
+        this.maxDistance = 80;
         this.xpCost = 10;
         this.spellDamage = 0;
         this.spellColour = Color.fromRGB(235, 147, 255);
@@ -44,6 +48,11 @@ public class ExpelliarmusSpell implements Spell {
     @Override
     public String description() {
         return this.description;
+    }
+
+    @Override
+    public int maxDistance() {
+        return this.maxDistance;
     }
 
     @Override

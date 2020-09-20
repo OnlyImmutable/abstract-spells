@@ -3,10 +3,8 @@ package com.abstractstudios.spells;
 import com.abstractstudios.spells.base.spell.Spell;
 import com.abstractstudios.spells.base.spell.spells.ExpelliarmusSpell;
 import com.abstractstudios.spells.base.user.SpellUser;
-import com.abstractstudios.spells.base.wand.Wand;
 import com.abstractstudios.spells.config.ConfigManager;
 import com.abstractstudios.spells.config.configs.SpellConfig;
-import com.abstractstudios.spells.config.configs.WandConfig;
 import com.abstractstudios.spells.listener.SpellListener;
 import com.abstractstudios.spells.listener.UserListener;
 import com.abstractstudios.spells.manager.UserManager;
@@ -15,7 +13,6 @@ import com.abstractstudios.spells.utils.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -37,15 +34,13 @@ public class AbstractSpellsPlugin extends JavaPlugin {
                 .serializeNulls()
                 .registerTypeAdapter(Spell.class, new InterfaceProvider<Spell>())
                 .create();
+
         // Initialise the Random.
         RANDOM = new Random();
     }
 
     /** {@link SpellConfig} */
     private SpellConfig spellConfig;
-
-    /** {@link WandConfig} */
-    private WandConfig wandConfig;
 
     @Override
     public void onEnable() {
@@ -54,12 +49,6 @@ public class AbstractSpellsPlugin extends JavaPlugin {
 
         // Load appropriate configs.
         spellConfig = ConfigManager.loadConfigFile(SpellConfig.class, defaults -> new SpellConfig(getCodedSpells()));
-
-        wandConfig = ConfigManager.loadConfigFile(WandConfig.class, defaults -> new WandConfig(Arrays.asList(
-                new Wand("Basic", Material.STICK),
-                new Wand("Skilled", Material.STICK),
-                new Wand("Professional", Material.BLAZE_ROD)
-        )));
 
         // Load appropriate listeners
         Bukkit.getPluginManager().registerEvents(new UserListener(), this);
@@ -116,16 +105,9 @@ public class AbstractSpellsPlugin extends JavaPlugin {
     }
 
     /**
-     * @return Get the config associated with wands.
-     */
-    public WandConfig getWandConfig() {
-        return wandConfig;
-    }
-
-    /**
      * @return Get all the coded spells to pass to the config.
      */
-    private final List<Spell> getCodedSpells() {
+    private List<Spell> getCodedSpells() {
         return Collections.singletonList(
                 new ExpelliarmusSpell()
         );

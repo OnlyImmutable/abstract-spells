@@ -30,8 +30,10 @@ public class UserListener implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
         SpellUser user = UserManager.getUser(uuid);
 
+        // Make sure the user has their data loaded.
         if (user == null) return;
 
+        // Save the user.
         UserManager.removeUser(uuid);
         Logger.display("Unloaded user " + user.getUuid().toString());
     }

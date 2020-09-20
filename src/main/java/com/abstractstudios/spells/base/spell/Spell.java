@@ -13,6 +13,9 @@ public interface Spell {
     // Description of the spell
     String description();
 
+    // The max distance the spell can travel before breaking.
+    int maxDistance();
+
     // Cost in xp to cast the spell.
     int xpCost();
 

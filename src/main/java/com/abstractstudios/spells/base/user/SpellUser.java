@@ -107,6 +107,7 @@ public class SpellUser {
         final Snowball snowball = caster.getWorld().spawn(caster.getEyeLocation().subtract(0, 0.1, 0), Snowball.class);
 
         try {
+
             Class<?> packetPlayOutEntityDestroy = ReflectionUtil.PackageType.MINECRAFT_SERVER.getClass("PacketPlayOutEntityDestroy");
             Constructor<?> packetPlayOutEntityDestroyConstructor = packetPlayOutEntityDestroy.getConstructor(int[].class);
 
@@ -128,12 +129,23 @@ public class SpellUser {
 
             public void run() {
 
+                // Set snowball velocity so it does not fall
                 snowball.setVelocity(direction);
 
-                Particle.DustOptions dust = new Particle.DustOptions(currentSpell.spellColour(), 1);
+                // Simple particle trail
+                Particle.DustOptions dust = new Particle.DustOptions(currentSpell.spellColour(), 2);
                 caster.getWorld().spawnParticle(Particle.REDSTONE, snowball.getLocation().getX(), snowball.getLocation().getY() + 0.1, snowball.getLocation().getZ(), 0, (float) direction.getX(), (float) direction.getY(), (float) direction.getZ(), 2.5 , dust);
 
-                if (snowball.isOnGround() || snowball.isDead()) this.cancel();
+                // Calculate distance between snowball and the casters original position at cast.
+                double distance = snowball.getLocation().distance(caster.getLocation());
+
+                // Check if the snowball is dead or the snowball proceeds past the defined distance from the user.
+                if ((snowball.isOnGround() || snowball.isDead()) || distance > getCurrentSpell().maxDistance()) {
+                    // Cancel runnable.
+                    this.cancel();
+                    // Remove snowball.
+                    snowball.remove();
+                }
 
             }
         }.runTaskTimer(AbstractSpellsPlugin.getPlugin(), 0, 1);
