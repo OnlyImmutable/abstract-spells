@@ -57,9 +57,9 @@ public class Database {
     /**
      * Send a prepared statement to the database async and return the result.
      * @param query - query.
-     * @param callback - callback.
+     * @param data - data.
      */
-    public void preparedStatement(String query, Callback<ResultSet> callback) throws DatabaseException {
+    public void preparedStatement(String query, Callback<ResultSet> data) throws DatabaseException {
 
         if (hikariConnectionPool == null || hikariConnectionPool.isClosed()) {
             throw new DatabaseException("Not connected to the database.");
@@ -70,16 +70,44 @@ public class Database {
             @Override
             public void run() {
 
-                try (Connection connection = hikariConnectionPool.getConnection()) {
+                try (Connection connection = hikariConnectionPool.getConnection(); PreparedStatement statement = connection.prepareStatement(query)) {
 
-                    try (PreparedStatement statement = connection.prepareStatement(query)) {
-                        callback.call(statement.executeQuery());
+                    boolean altering = (query.toUpperCase().contains("CREATE TABLE") || query.toUpperCase().contains("INSERT INTO") | query.toUpperCase().contains("UPDATE"));
+
+                    if (altering) {
+                        statement.execute();
+                        return;
                     }
+
+                    ResultSet set = statement.executeQuery();
+
+                    if (!set.next()) {
+                        data.call(null);
+                        return;
+                    }
+
+                    data.call(set);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }.runTaskAsynchronously(AbstractSpellsPlugin.getPlugin());
+    }
+
+    /**
+     * Create the default tables associated with the plugin.
+     */
+    public void createDefaultTables() {
+
+        try {
+
+            // Tables
+            preparedStatement("CREATE TABLE IF NOT EXISTS `users` (uuid VARCHAR(37) PRIMARY KEY, firstJoined DATETIME, lastOnline DATETIME, xp BIGINT)", (result) -> {});
+
+            Logger.display("Attempted to create appropriate tables..");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

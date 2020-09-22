@@ -13,7 +13,9 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -91,28 +93,28 @@ public class SpellUser {
      */
     public void load() {
 
-        Logger.display("Profile", "Loading profie for " + uuid.toString());
+        Logger.display("Profile", "Loading profile for " + uuid.toString());
 
         try {
 
-            AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("SELECT * FROM `users` WHERE uuid=`" + uuid.toString() + "`;", resultSet -> {
+            AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("SELECT * FROM `users` WHERE `uuid` = '" + uuid.toString() + "';", resultSet -> {
 
-                if (resultSet != null) {
+                // Data could not be found..
+                if (resultSet == null) {
 
-                    if (!resultSet.next()) {
+                    Timestamp date = new Timestamp(new Date().getTime());
 
-                        // First time joining
-                        AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("INSERT INTO `users` (`uuid`) VALUES (`" + uuid.toString() + "`);", callback -> {
-                            Logger.display("Profile", "Saving profile on first join for " + uuid.toString());
-                            load();
-                        });
+                    // First time joining
+                    AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("INSERT INTO `users` (`uuid`, `firstJoined`, `lastOnline`, `xp`) VALUES ('" + uuid.toString() + "', '" + date + "', '" + date + "', 100);", callback -> {
+                        Logger.display("Profile", "Saving profile on first join for " + uuid.toString());
+                        load();
+                    });
 
-                        return;
-                    }
-
-                    // Load appropriate data
-                    Logger.display("Profile", "Loaded profile for " + uuid.toString());
+                    return;
                 }
+
+                // Load appropriate data
+                Logger.display("Profile", "Loaded profile for " + uuid.toString());
             });
         } catch (DatabaseException e) {
             e.printStackTrace();
@@ -124,10 +126,16 @@ public class SpellUser {
      */
     public void save() {
 
-        Logger.display("Profile", "Saving profie for " + uuid.toString());
+        Logger.display("Profile", "Saving profile for " + uuid.toString());
 
         try {
-            AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("UPDATE `users` uuid=`" + uuid.toString() + "`;", resultSet -> {
+
+            Timestamp date = new Timestamp(new Date().getTime());
+
+            AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("UPDATE `users` SET " +
+                    "`uuid`='" + uuid.toString() + "', " +
+                    "`lastOnline`='" + date + "' " +
+                    "WHERE `uuid` = '" + uuid.toString() + "';", resultSet -> {
                 Logger.display("Profile", "Saved profile for " + uuid.toString());
             });
         } catch (DatabaseException e) {

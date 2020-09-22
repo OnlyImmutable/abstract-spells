@@ -27,7 +27,7 @@ public class AbstractSpellsPlugin extends JavaPlugin {
     /** Create a {@link Random} instance */
     public static final Random RANDOM;
 
-    /** */
+    /** Plugin instance. */
     public static AbstractSpellsPlugin plugin;
 
     static {
@@ -55,6 +55,7 @@ public class AbstractSpellsPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
 
+        // Set plugin instance.
         plugin = this;
 
         // Load appropriate configs.
@@ -71,6 +72,9 @@ public class AbstractSpellsPlugin extends JavaPlugin {
         // Connect to the database.
         database = new Database();
         database.connect();
+
+        // Create default tables
+        database.createDefaultTables();
 
         // Load appropriate listeners
         Bukkit.getPluginManager().registerEvents(new UserListener(), this);
