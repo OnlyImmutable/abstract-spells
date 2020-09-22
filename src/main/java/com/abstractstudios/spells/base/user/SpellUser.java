@@ -4,6 +4,7 @@ import com.abstractstudios.spells.AbstractSpellsPlugin;
 import com.abstractstudios.spells.base.spell.Spell;
 import com.abstractstudios.spells.utils.Logger;
 import com.abstractstudios.spells.utils.ReflectionUtil;
+import com.abstractstudios.spells.utils.database.exceptions.DatabaseException;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
@@ -12,6 +13,7 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -65,7 +67,10 @@ public class SpellUser {
      * @param spell - spell.
      */
     public void addOwnedSpell(Spell spell) {
-        if (ownedSpells.contains(spell)) return;
+        
+        if (ownedSpells.contains(spell)) 
+            return;
+        
         ownedSpells.add(spell);
     }
 
@@ -74,7 +79,10 @@ public class SpellUser {
      * @param spell - spell.
      */
     public void removeOwnedSpell(Spell spell) {
-        if (!ownedSpells.contains(spell)) return;
+        
+        if (!ownedSpells.contains(spell)) 
+            return;
+        
         ownedSpells.remove(spell);
     }
 
@@ -82,14 +90,49 @@ public class SpellUser {
      * Load profile data from database.
      */
     public void load() {
-        Logger.display("Profiles", "Loading profile for " + uuid.toString());
+
+        Logger.display("Profile", "Loading profie for " + uuid.toString());
+
+        try {
+
+            AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("SELECT * FROM `users` WHERE uuid=`" + uuid.toString() + "`;", resultSet -> {
+
+                if (resultSet != null) {
+
+                    if (!resultSet.next()) {
+
+                        // First time joining
+                        AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("INSERT INTO `users` (`uuid`) VALUES (`" + uuid.toString() + "`);", callback -> {
+                            Logger.display("Profile", "Saving profile on first join for " + uuid.toString());
+                            load();
+                        });
+
+                        return;
+                    }
+
+                    // Load appropriate data
+                    Logger.display("Profile", "Loaded profile for " + uuid.toString());
+                }
+            });
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Save profile data to database.
      */
     public void save() {
-        Logger.display("Profiles", "Saving profile for " + uuid.toString());
+
+        Logger.display("Profile", "Saving profie for " + uuid.toString());
+
+        try {
+            AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("UPDATE `users` uuid=`" + uuid.toString() + "`;", resultSet -> {
+                Logger.display("Profile", "Saved profile for " + uuid.toString());
+            });
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -99,15 +142,19 @@ public class SpellUser {
 
         Player caster = Bukkit.getPlayer(uuid);
 
+        // Ensure the caster is actually online.
         if (caster == null || !caster.isOnline()) return;
 
+        // Location of the caster and direction vector.
         Location location = caster.getLocation();
         Vector direction = location.getDirection().normalize();
 
+        // Create a snowball for the particles to follow.
         final Snowball snowball = caster.getWorld().spawn(caster.getEyeLocation().subtract(0, 0.1, 0), Snowball.class);
 
         try {
 
+            // Send a packet to remove the snowball visually.
             Class<?> packetPlayOutEntityDestroy = ReflectionUtil.PackageType.MINECRAFT_SERVER.getClass("PacketPlayOutEntityDestroy");
             Constructor<?> packetPlayOutEntityDestroyConstructor = packetPlayOutEntityDestroy.getConstructor(int[].class);
 
@@ -118,9 +165,11 @@ public class SpellUser {
             e.printStackTrace();
         }
 
+        // Store spell name with custom colour to stop players renaming snowballs.
         snowball.setCustomNameVisible(false);
         snowball.setCustomName(ChatColor.RED + getCurrentSpell().name());
 
+        // Set the snowball data.
         snowball.setShooter(caster);
         snowball.setBounce(false);
         snowball.setSilent(true);

@@ -4,12 +4,14 @@ import com.abstractstudios.spells.base.spell.Spell;
 import com.abstractstudios.spells.base.spell.spells.ExpelliarmusSpell;
 import com.abstractstudios.spells.base.user.SpellUser;
 import com.abstractstudios.spells.config.ConfigManager;
+import com.abstractstudios.spells.config.configs.DatabaseConfig;
 import com.abstractstudios.spells.config.configs.SpellConfig;
 import com.abstractstudios.spells.listener.SpellListener;
 import com.abstractstudios.spells.listener.UserListener;
 import com.abstractstudios.spells.manager.UserManager;
 import com.abstractstudios.spells.provider.InterfaceProvider;
 import com.abstractstudios.spells.utils.Logger;
+import com.abstractstudios.spells.utils.database.Database;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.bukkit.Bukkit;
@@ -25,9 +27,11 @@ public class AbstractSpellsPlugin extends JavaPlugin {
     /** Create a {@link Random} instance */
     public static final Random RANDOM;
 
+    /** */
     public static AbstractSpellsPlugin plugin;
 
     static {
+
         // Initialise GsonBuilder whilst serializing nulls to empty.
         GSON = new GsonBuilder()
                 .setPrettyPrinting()
@@ -42,6 +46,12 @@ public class AbstractSpellsPlugin extends JavaPlugin {
     /** {@link SpellConfig} */
     private SpellConfig spellConfig;
 
+    /** {@link DatabaseConfig} */
+    private DatabaseConfig databaseConfig;
+
+    /** {@link Database} */
+    private Database database;
+
     @Override
     public void onEnable() {
 
@@ -49,6 +59,18 @@ public class AbstractSpellsPlugin extends JavaPlugin {
 
         // Load appropriate configs.
         spellConfig = ConfigManager.loadConfigFile(SpellConfig.class, defaults -> new SpellConfig(getCodedSpells()));
+
+        databaseConfig = ConfigManager.loadConfigFile(DatabaseConfig.class, defaults -> new DatabaseConfig(
+           "127.0.0.1",
+           3306,
+           "abstractspells",
+           "root",
+           ""
+        ));
+
+        // Connect to the database.
+        database = new Database();
+        database.connect();
 
         // Load appropriate listeners
         Bukkit.getPluginManager().registerEvents(new UserListener(), this);
@@ -87,6 +109,11 @@ public class AbstractSpellsPlugin extends JavaPlugin {
             Logger.display("Unloaded user " + user.getUuid().toString());
         });
 
+        // Disconnect from the database.
+        if (database != null) {
+            database.disconnect();
+        }
+
         Logger.display("Abstract Spells has unloaded.");
     }
 
@@ -95,6 +122,20 @@ public class AbstractSpellsPlugin extends JavaPlugin {
      */
     public static AbstractSpellsPlugin getPlugin() {
         return plugin;
+    }
+
+    /**
+     * @return Get the {@link Database}
+     */
+    public Database getDatabase() {
+        return database;
+    }
+
+    /**
+     * @return Get the {@link DatabaseConfig}.
+     */
+    public DatabaseConfig getDatabaseConfig() {
+        return databaseConfig;
     }
 
     /**
