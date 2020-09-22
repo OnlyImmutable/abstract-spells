@@ -14,7 +14,6 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.UUID;
@@ -22,6 +21,8 @@ import java.util.UUID;
 public class SpellUser {
 
     private final UUID uuid;
+
+    private int xp;
 
     private Spell currentSpell;
     private final HashSet<Spell> ownedSpells;
@@ -32,6 +33,7 @@ public class SpellUser {
      */
     public SpellUser(UUID uuid) {
         this.uuid = uuid;
+        this.xp = 0;
         this.currentSpell = AbstractSpellsPlugin.getPlugin().getSpellConfig().getSpellByName("Expelliarmus");
         this.ownedSpells = new HashSet<>();
     }
@@ -41,6 +43,13 @@ public class SpellUser {
      */
     public UUID getUuid() {
         return uuid;
+    }
+
+    /**
+     * @return Get users current xp.
+     */
+    public int getXp() {
+        return xp;
     }
 
     /**
@@ -132,12 +141,9 @@ public class SpellUser {
 
             Timestamp date = new Timestamp(new Date().getTime());
 
-            AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("UPDATE `users` SET " +
-                    "`uuid`='" + uuid.toString() + "', " +
-                    "`lastOnline`='" + date + "' " +
-                    "WHERE `uuid` = '" + uuid.toString() + "';", resultSet -> {
-                Logger.display("Profile", "Saved profile for " + uuid.toString());
-            });
+            AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("UPDATE `users` SET `uuid`='" + uuid.toString() + "', `lastOnline`='" + date + "' WHERE `uuid` = '" + uuid.toString() + "';", resultSet ->
+                    Logger.display("Profile", "Saved profile for " + uuid.toString())
+            );
         } catch (DatabaseException e) {
             e.printStackTrace();
         }

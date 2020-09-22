@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class UserManager {
 
     // Users
-    private static LoadingCache<UUID, SpellUser> users;
+    private static final LoadingCache<UUID, SpellUser> users;
 
     static {
 

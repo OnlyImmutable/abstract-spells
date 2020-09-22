@@ -15,16 +15,20 @@ public class InterfaceProvider<T> implements JsonSerializer<T>, JsonDeserializer
     }
 
     @Override
-    public final T deserialize(final JsonElement elem, final Type interfaceType, final JsonDeserializationContext context) throws JsonParseException {
-        final JsonObject member = (JsonObject) elem;
+    public final T deserialize(final JsonElement element, final Type interfaceType, final JsonDeserializationContext context) throws JsonParseException {
+        final JsonObject member = (JsonObject) element;
         final JsonElement typeString = get(member, "type");
         final JsonElement data = get(member, "data");
         final Type actualType = typeForName(typeString);
         return context.deserialize(data, actualType);
     }
 
+    /**
+     * Type by name.
+     * @param element - element.
+     * @return Type
+     */
     private Type typeForName(final JsonElement element) {
-
         try {
             return Class.forName(element.getAsString());
         } catch (ClassNotFoundException e) {
@@ -32,6 +36,12 @@ public class InterfaceProvider<T> implements JsonSerializer<T>, JsonDeserializer
         }
     }
 
+    /**
+     * Get {@link JsonElement}.
+     * @param wrapper - wrapper.
+     * @param name - name.
+     * @return JsonElement
+     */
     private JsonElement get(final JsonObject wrapper, final String name) {
         final JsonElement elem = wrapper.get(name);
 
