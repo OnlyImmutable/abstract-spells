@@ -1,4 +1,4 @@
-package com.abstractstudios.spells.config.configs;
+package com.abstractstudios.spells.config.impl;
 
 import com.abstractstudios.spells.config.Config;
 

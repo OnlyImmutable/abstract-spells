@@ -1,7 +1,7 @@
 package com.abstractstudios.spells.utils.database;
 
 import com.abstractstudios.spells.AbstractSpellsPlugin;
-import com.abstractstudios.spells.config.configs.DatabaseConfig;
+import com.abstractstudios.spells.config.impl.DatabaseConfig;
 import com.abstractstudios.spells.utils.Callback;
 import com.abstractstudios.spells.utils.Logger;
 import com.abstractstudios.spells.utils.database.exceptions.DatabaseException;

@@ -1,11 +1,11 @@
 package com.abstractstudios.spells;
 
 import com.abstractstudios.spells.base.spell.Spell;
-import com.abstractstudios.spells.base.spell.spells.ExpelliarmusSpell;
+import com.abstractstudios.spells.base.spell.impl.ExpelliarmusSpell;
 import com.abstractstudios.spells.base.user.SpellUser;
 import com.abstractstudios.spells.config.ConfigManager;
-import com.abstractstudios.spells.config.configs.DatabaseConfig;
-import com.abstractstudios.spells.config.configs.SpellConfig;
+import com.abstractstudios.spells.config.impl.DatabaseConfig;
+import com.abstractstudios.spells.config.impl.SpellConfig;
 import com.abstractstudios.spells.listener.SpellListener;
 import com.abstractstudios.spells.listener.UserListener;
 import com.abstractstudios.spells.manager.UserManager;

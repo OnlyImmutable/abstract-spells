@@ -1,4 +1,4 @@
-package com.abstractstudios.spells.base.spell.spells;
+package com.abstractstudios.spells.base.spell.impl;
 
 import com.abstractstudios.spells.AbstractSpellsPlugin;
 import com.abstractstudios.spells.base.spell.Spell;
