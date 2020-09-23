@@ -73,25 +73,33 @@ public class ExpelliarmusSpell implements Spell {
     @Override
     public void onHit(Player caster, Entity hitEntity, Block hitBlock) {
 
+        // Entity instance of Player
         if (hitEntity instanceof Player) {
 
+            // Get the player.
             Player hit = (Player) hitEntity;
 
+            // Get all their slots.
             int totalSlots = hit.getInventory().getSize();
 
+            // Get the old item and the new item slot.
             int oldSlot = hit.getInventory().getHeldItemSlot();
             int newSlot = AbstractSpellsPlugin.RANDOM.nextInt(totalSlots);
 
+            // Get the old item and new item from slot and current hand.
             ItemStack currentItem = hit.getInventory().getItemInMainHand();
             ItemStack newSlotItem = hit.getInventory().getItem(newSlot);
 
+            // If its air just ignore.
             if (currentItem.getType() == Material.AIR) return;
 
+            // Switch item.
             if (newSlotItem != null) {
                 hit.getInventory().remove(Objects.requireNonNull(hit.getInventory().getItem(newSlot)));
                 hit.getInventory().setItem(oldSlot, newSlotItem);
             }
 
+            // Switch item.
             hit.getInventory().remove(hit.getInventory().getItemInMainHand());
             hit.getInventory().setItem(newSlot, currentItem);
         }

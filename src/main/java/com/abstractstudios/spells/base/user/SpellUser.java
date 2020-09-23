@@ -22,6 +22,9 @@ public class SpellUser {
 
     private final UUID uuid;
 
+    private Date firstJoined;
+    private Date lastJoined;
+
     private int xp;
 
     private Spell currentSpell;
@@ -122,7 +125,39 @@ public class SpellUser {
                     return;
                 }
 
-                // Load appropriate data
+
+                this.firstJoined = resultSet.getDate("firstJoined");
+                this.lastJoined = resultSet.getDate("lastOnline");
+
+                this.xp = resultSet.getInt("xp");
+
+                AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("SELECT * FROM `spells` WHERE `uuid` = '" + uuid.toString() + "';", resultSetSpells -> {
+
+                   if (resultSetSpells != null) {
+
+                       HashSet<String> spellList = new HashSet<>();
+
+                       // Somehow the first record won't appear in the while loop, so this fixes that.
+                       spellList.add(resultSetSpells.getString("spellName"));
+
+                       // Add rest of the spells to the list.
+                       while (resultSetSpells.next()) spellList.add(resultSetSpells.getString("spellName"));
+
+                       // Handle spells and add owned ones.
+                       spellList.forEach(spell -> {
+
+                           // Find the appropriate spells.
+                           Spell foundSpell = AbstractSpellsPlugin.getPlugin().getSpellConfig().getSpellByName(spell);
+
+                           // Ensure spell in the db exists.
+                           if (foundSpell == null) return;
+
+                           // Add owned spell.
+                           addOwnedSpell(foundSpell);
+                       });
+                   }
+                });
+
                 Logger.display("Profile", "Loaded profile for " + uuid.toString());
             });
         } catch (DatabaseException e) {
@@ -141,9 +176,22 @@ public class SpellUser {
 
             Timestamp date = new Timestamp(new Date().getTime());
 
-            AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("UPDATE `users` SET `uuid`='" + uuid.toString() + "', `lastOnline`='" + date + "' WHERE `uuid` = '" + uuid.toString() + "';", resultSet ->
-                    Logger.display("Profile", "Saved profile for " + uuid.toString())
-            );
+            AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("UPDATE `users` SET `uuid`='" + uuid.toString() + "', `lastOnline`='" + date + "' WHERE `uuid` = '" + uuid.toString() + "';", resultSet -> {
+
+                if (getOwnedSpells().size() > 0) {
+
+                    StringBuilder spellQuery = new StringBuilder("INSERT IGNORE INTO `spells` (`uuid`, `spellName`) VALUES ");
+
+                    // Creates an insert for spells, won't replicate due to constraints.
+                    getOwnedSpells().forEach(spell -> spellQuery.append("(").append("'").append(uuid.toString()).append("'").append(", ").append("'").append(spell).append("'").append("), "));
+
+                    String finalQuery = spellQuery.toString().substring(0, spellQuery.length() - 2) + ";";
+
+                    AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement(finalQuery, resultSetSpells -> {});
+                }
+
+                Logger.display("Profile", "Saved data for " + uuid.toString());
+            });
         } catch (DatabaseException e) {
             e.printStackTrace();
         }

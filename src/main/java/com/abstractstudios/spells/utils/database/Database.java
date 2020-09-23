@@ -34,7 +34,7 @@ public class Database {
         hikariConnectionPool.addDataSourceProperty("user", config.getUsername());
         hikariConnectionPool.addDataSourceProperty("password", config.getPassword());
 
-        hikariConnectionPool.setMaximumPoolSize(20);
+        hikariConnectionPool.setMaximumPoolSize(25);
 
         hikariConnectionPool.setConnectionTimeout(3000);
         hikariConnectionPool.setValidationTimeout(1000);
@@ -72,10 +72,11 @@ public class Database {
 
                 try (Connection connection = hikariConnectionPool.getConnection(); PreparedStatement statement = connection.prepareStatement(query)) {
 
-                    boolean altering = (query.toUpperCase().contains("CREATE TABLE") || query.toUpperCase().contains("INSERT INTO") | query.toUpperCase().contains("UPDATE"));
+                    boolean altering = (query.toUpperCase().contains("CREATE TABLE") || query.toUpperCase().contains("DROP TABLE") || query.toUpperCase().contains("INSERT INTO") || query.toUpperCase().contains("INSERT IGNORE INTO") || query.toUpperCase().contains("UPDATE") || query.toUpperCase().contains("ALTER TABLE"));
 
                     if (altering) {
                         statement.execute();
+                        data.call(null);
                         return;
                     }
 
@@ -103,8 +104,10 @@ public class Database {
 
             // Tables
             preparedStatement("CREATE TABLE IF NOT EXISTS `users` (uuid VARCHAR(37) PRIMARY KEY, firstJoined DATETIME, lastOnline DATETIME, xp BIGINT)", (result) -> {});
+            preparedStatement("CREATE TABLE IF NOT EXISTS `spells` (uuid VARCHAR(37), spellName VARCHAR(50), FOREIGN KEY (uuid) REFERENCES users(uuid), INDEX UNIQUE_SPELLS(`uuid`, `spellName`));", (result) -> {});
 
             Logger.display("Attempted to create appropriate tables..");
+
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -27,7 +27,7 @@ public class AbstractSpellsPlugin extends JavaPlugin {
     /** Create a {@link Random} instance */
     public static final Random RANDOM;
 
-    /** Plugin instance. */
+    /** {@link AbstractSpellsPlugin} plugin instance. */
     public static AbstractSpellsPlugin plugin;
 
     static {
