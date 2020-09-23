@@ -18,6 +18,14 @@ public class DatabaseConfig {
     // Password for the database.
     private final String password;
 
+    /**
+     * Create a {@link DatabaseConfig}
+     * @param host - host.
+     * @param port - port.
+     * @param database - database.
+     * @param username - username.
+     * @param password - password.
+     */
     public DatabaseConfig(String host, int port, String database, String username, String password) {
         this.host = host;
         this.port = port;

@@ -80,6 +80,7 @@ public class Database {
                         return;
                     }
 
+                    // Data
                     ResultSet set = statement.executeQuery();
 
                     if (!set.next()) {
@@ -103,8 +104,8 @@ public class Database {
         try {
 
             // Tables
-            preparedStatement("CREATE TABLE IF NOT EXISTS `users` (uuid VARCHAR(37) PRIMARY KEY, firstJoined DATETIME, lastOnline DATETIME, xp BIGINT)", (result) -> {});
-            preparedStatement("CREATE TABLE IF NOT EXISTS `spells` (uuid VARCHAR(37), spellName VARCHAR(50), FOREIGN KEY (uuid) REFERENCES users(uuid), INDEX UNIQUE_SPELLS(`uuid`, `spellName`));", (result) -> {});
+            preparedStatement("CREATE TABLE IF NOT EXISTS `users` (uuid VARCHAR(37) PRIMARY KEY, firstJoined DATETIME, lastOnline DATETIME, xp BIGINT, currentSpell VARCHAR)", (result) -> {});
+            preparedStatement("CREATE TABLE IF NOT EXISTS `spells` (uuid VARCHAR(37), spellName VARCHAR(50), FOREIGN KEY (uuid) REFERENCES users(uuid), INDEX OWNED_SPELLS(`uuid`, `spellName`));", (result) -> {});
 
             Logger.display("Attempted to create appropriate tables..");
 

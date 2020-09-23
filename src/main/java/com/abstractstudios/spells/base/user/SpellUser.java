@@ -131,10 +131,17 @@ public class SpellUser {
 
                 this.xp = resultSet.getInt("xp");
 
+                Spell currentSpell = AbstractSpellsPlugin.getPlugin().getSpellConfig().getSpellByName(resultSet.getString("currentSpell"));
+
+                if (currentSpell != null) {
+                    setCurrentSpell(currentSpell);
+                }
+
                 AbstractSpellsPlugin.getPlugin().getDatabase().preparedStatement("SELECT * FROM `spells` WHERE `uuid` = '" + uuid.toString() + "';", resultSetSpells -> {
 
                    if (resultSetSpells != null) {
 
+                       // Temporary list
                        HashSet<String> spellList = new HashSet<>();
 
                        // Somehow the first record won't appear in the while loop, so this fixes that.
